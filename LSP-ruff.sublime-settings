@@ -1,4 +1,12 @@
 {
+    "settings": {
+        // There are quite a lot of settings for intelephense...
+        // For a full list, you can check the link above or just use LSP-json for autocompletion.
+
+        // The (Jinja2) template of the status bar text which is inside the parentheses `(...)`.
+        // See https://jinja.palletsprojects.com/templates/
+        "statusText": "{% if server_version %}v{{ server_version }}{% endif %}",
+    },
     "initializationOptions": {
         "settings": {
             // same as globalSettings
@@ -36,7 +44,7 @@
     "command": [
         "$server_path",
         "server",
-        "--preview"
+        "--preview", // I like preview features
     ],
     "schemes": [
         "file", // regular files
