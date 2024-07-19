@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
+import os
+import re
 from typing import Any
 
 import sublime
-from LSP.plugin import ClientConfig, DottedDict, WorkspaceFolder
+from LSP.plugin import DottedDict
 from lsp_utils.pip_client_handler import PipClientHandler
 
 from .constants import PACKAGE_NAME
@@ -17,32 +18,23 @@ class LspRuffPlugin(PipClientHandler):
     requirements_txt_path = "requirements.txt"
     server_filename = "ruff"
 
-    server_requirements_txt_path = "requirements.txt"
-    """The path to the `requirements.txt` file of the language server. Relative to "Package Storage/PACKAGE_NAME/"."""
     server_version = ""
     """The version of the language server."""
 
     @classmethod
     def should_ignore(cls, view: sublime.View) -> bool:
         return bool(
-            # ignore REPL views (https://github.com/sublimelsp/LSP-pyright/issues/343)
+            # SublimeREPL views
             view.settings().get("repl")
-            # ignore Python-like syntax test files
-            or view.substr(sublime.Region(0, 20)).startswith("# SYNTAX TEST ")
+            # syntax test files
+            or os.path.basename(view.file_name() or "").startswith("syntax_test")
         )
 
     @classmethod
-    def on_pre_start(
-        cls,
-        window: sublime.Window,
-        initiating_view: sublime.View,
-        workspace_folders: list[WorkspaceFolder],
-        configuration: ClientConfig,
-    ) -> str | None:
-        super().on_pre_start(window, initiating_view, workspace_folders, configuration)
+    def setup(cls) -> None:
+        super().setup()
 
         cls.server_version = cls.parse_server_version()
-        return None
 
     def on_settings_changed(self, settings: DottedDict) -> None:
         super().on_settings_changed(settings)
@@ -74,8 +66,5 @@ class LspRuffPlugin(PipClientHandler):
 
     @classmethod
     def parse_server_version(cls) -> str:
-        with open(Path(cls.package_storage()) / cls.server_requirements_txt_path, encoding="utf-8") as f:
-            for line in f:
-                if line.startswith("ruff=="):
-                    return line[6:].strip()
-        return ""
+        lock_file_content = sublime.load_resource(f"Packages/{PACKAGE_NAME}/requirements.txt")
+        return m.group(1) if (m := re.search(r"^ruff==(.*)", lock_file_content, flags=re.MULTILINE)) else ""
