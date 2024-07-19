@@ -18,7 +18,7 @@ class LspRuffPlugin(PipClientHandler):
     server_filename = "ruff"
 
     server_requirements_txt_path = "requirements.txt"
-    """The path to the `requirements.txt` file of the language server."""
+    """The path to the `requirements.txt` file of the language server. Relative to "Package Storage/PACKAGE_NAME/"."""
     server_version = ""
     """The version of the language server."""
 
