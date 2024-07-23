@@ -29,7 +29,7 @@
                     "Configuration files present in the workspace takes priority over editor settings.",
                     "Ignore configuration files entirely i.e., only use editor settings."
                   ],
-                  "markdownDescription": "The strategy to use when resolving settings across VS Code and the filesystem. By default, editor configuration is prioritized over `ruff.toml` and `pyproject.toml` files."
+                  "markdownDescription": "The strategy to use when resolving settings across editor and the filesystem. By default, editor configuration is prioritized over `ruff.toml` and `pyproject.toml` files."
                 },
                 "exclude": {
                   "type": ["array", "null"],
@@ -98,7 +98,8 @@
                 "showNotification": {
                   "type": "string",
                   "default": "off",
-                  "description": "Setting to control when a notification is shown."
+                  "description": "Setting to control when a notification is shown.",
+                  "deprecationMessage": "This option only works in VS Code."
                 },
                 "organizeImports": {
                   "type": "boolean",
