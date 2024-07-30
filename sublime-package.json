@@ -131,6 +131,17 @@
                       "$ref": "sublime://settings/LSP-ruff#/definitions/LspRuffSettings",
                     }
                   }
+                },
+                "settings": {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "properties": {
+                    "statusText": {
+                      "default": "{% if server_version %}v{{ server_version }}{% endif %}",
+                      "markdownDescription": "The (Jinja2) template of the status bar text which is inside the parentheses `(...)`. See https://jinja.palletsprojects.com/templates/",
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
