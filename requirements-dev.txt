@@ -8,7 +8,7 @@ mypy==1.11.2
     # via -r requirements-dev.in
 mypy-extensions==1.0.0
     # via mypy
-ruff==0.6.3
+ruff==0.6.5
     # via -r requirements-dev.in
 typing-extensions==4.12.2
     # via
