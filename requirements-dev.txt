@@ -2,16 +2,14 @@
 #    uv pip compile requirements-dev.in -o requirements-dev.txt
 jinja2==3.1.4
     # via -r requirements-prod.in
-markupsafe==2.1.5
+markupsafe==3.0.2
     # via jinja2
-mypy==1.12.0
+mypy==1.13.0
     # via -r requirements-dev.in
 mypy-extensions==1.0.0
     # via mypy
-ruff==0.7.0
+ruff==0.8.0
     # via -r requirements-dev.in
-tomli==2.0.2
-    # via mypy
 typing-extensions==4.12.2
     # via
     #   -r requirements-prod.in
