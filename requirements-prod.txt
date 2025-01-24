@@ -2,7 +2,7 @@
 #    uv pip compile requirements-prod.in -o requirements-prod.txt
 jinja2==3.1.5
     # via -r requirements-prod.in
-markupsafe==2.1.5
+markupsafe==3.0.2
     # via jinja2
 typing-extensions==4.12.2
     # via -r requirements-prod.in
