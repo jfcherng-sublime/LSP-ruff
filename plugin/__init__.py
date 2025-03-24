@@ -13,9 +13,7 @@ __all__ = (
 
 def plugin_loaded() -> None:
     """Executed when this plugin is loaded."""
-    LspRuffPlugin.setup()
 
 
 def plugin_unloaded() -> None:
     """Executed when this plugin is unloaded."""
-    LspRuffPlugin.cleanup()

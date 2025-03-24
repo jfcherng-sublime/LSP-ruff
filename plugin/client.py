@@ -1,25 +1,70 @@
 from __future__ import annotations
 
+import io
 import os
-import re
+from pathlib import Path
 from typing import Any
 
 import sublime
-from LSP.plugin import DottedDict
-from lsp_utils.pip_client_handler import PipClientHandler
+from LSP.plugin import AbstractPlugin, DottedDict
 
-from .constants import PACKAGE_NAME
+from .constants import (
+    DOWNLOAD_TARBALL_BIN_PATH,
+    PACKAGE_NAME,
+    SERVER_DOWNLOAD_HASH_URL,
+    SERVER_DOWNLOAD_URL,
+    SERVER_VERSION,
+)
 from .log import log_warning
 from .template import load_string_template
+from .utils import decompress_buffer, rmtree_ex, sha256sum, simple_urlopen
 
 
-class LspRuffPlugin(PipClientHandler):
-    package_name = PACKAGE_NAME
-    requirements_txt_path = "requirements.txt"
-    server_filename = "ruff"
+class LspRuffPlugin(AbstractPlugin):
+    server_version = SERVER_VERSION
 
-    server_version = ""
-    """The version of the language server."""
+    @classmethod
+    def name(cls) -> str:
+        return PACKAGE_NAME.partition("LSP-")[2]
+
+    @classmethod
+    def base_dir(cls) -> Path:
+        return Path(cls.storage_path()) / PACKAGE_NAME
+
+    @classmethod
+    def versioned_server_dir(cls) -> Path:
+        return cls.base_dir() / f"v{cls.server_version}"
+
+    @classmethod
+    def server_path(cls) -> Path:
+        return cls.versioned_server_dir() / DOWNLOAD_TARBALL_BIN_PATH
+
+    @classmethod
+    def additional_variables(cls) -> dict[str, str] | None:
+        return {
+            "server_path": str(cls.server_path()),
+        }
+
+    @classmethod
+    def needs_update_or_installation(cls) -> bool:
+        return not cls.server_path().is_file()
+
+    @classmethod
+    def install_or_update(cls) -> None:
+        rmtree_ex(cls.base_dir(), ignore_errors=True)
+
+        data = simple_urlopen(SERVER_DOWNLOAD_URL)
+
+        hash_actual = sha256sum(data)
+        hash_golden = simple_urlopen(SERVER_DOWNLOAD_HASH_URL).decode().partition(" ")[0]
+        if hash_actual != hash_golden:
+            raise ValueError(f"Mismatched downloaded file hash: {hash_actual} != {hash_golden}")
+
+        decompress_buffer(
+            io.BytesIO(data),
+            filename=SERVER_DOWNLOAD_URL.rpartition("/")[2],
+            dst_dir=cls.versioned_server_dir(),
+        )
 
     @classmethod
     def should_ignore(cls, view: sublime.View) -> bool:
@@ -30,11 +75,9 @@ class LspRuffPlugin(PipClientHandler):
             or os.path.basename(view.file_name() or "").startswith("syntax_test")
         )
 
-    @classmethod
-    def setup(cls) -> None:
-        super().setup()
-
-        cls.server_version = cls.parse_server_version()
+    # ----- #
+    # hooks #
+    # ----- #
 
     def on_settings_changed(self, settings: DottedDict) -> None:
         super().on_settings_changed(settings)
@@ -63,8 +106,3 @@ class LspRuffPlugin(PipClientHandler):
             except Exception as e:
                 log_warning(f'Invalid "statusText" template: {e}')
         session.set_config_status_async(rendered_text)
-
-    @classmethod
-    def parse_server_version(cls) -> str:
-        lock_file_content = sublime.load_resource(f"Packages/{PACKAGE_NAME}/requirements.txt")
-        return m.group(1) if (m := re.search(r"^ruff==(.*)", lock_file_content, flags=re.MULTILINE)) else ""
