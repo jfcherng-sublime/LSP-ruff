@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 import sublime
 
 assert __package__
@@ -7,7 +9,10 @@ assert __package__
 PACKAGE_NAME = __package__.partition(".")[0]
 
 PLATFORM_ARCH = f"{sublime.platform()}_{sublime.arch()}"
-SERVER_VERSION = "0.11.2"
+
+SERVER_VERSION = ""
+if m := re.match(r"^ruff==(.+)", sublime.load_resource(f"Packages/{PACKAGE_NAME}/requirements.txt"), re.MULTILINE):
+    SERVER_VERSION = m.group(1)
 
 DOWNLOAD_TARBALL_NAMES = {
     "linux_arm64": "ruff-aarch64-unknown-linux-gnu.tar.gz",
