@@ -1,1 +1,5 @@
+<<<<<<< Updated upstream
 ruff==0.12.2
+=======
+ruff==0.12.3
+>>>>>>> Stashed changes
