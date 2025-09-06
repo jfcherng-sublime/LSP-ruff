@@ -12,6 +12,7 @@ PLATFORM_ARCH = f"{sublime.platform()}_{sublime.arch()}"
 
 SERVER_VERSION = ""
 if m := re.match(r"^ruff==(.+)", sublime.load_resource(f"Packages/{PACKAGE_NAME}/requirements.txt"), re.MULTILINE):
+    print(f"(1) LSP-ruff SERVER_VERSION = {SERVER_VERSION}")
     SERVER_VERSION = m.group(1)
 
 DOWNLOAD_TARBALL_NAMES = {

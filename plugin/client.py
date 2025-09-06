@@ -22,6 +22,7 @@ from .utils import decompress_buffer, rmtree_ex, sha256sum, simple_urlopen
 
 class LspRuffPlugin(AbstractPlugin):
     server_version = SERVER_VERSION
+    print(f"(2) LSP-ruff server_version = {server_version}")
 
     @classmethod
     def name(cls) -> str:
