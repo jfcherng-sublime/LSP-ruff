@@ -8,21 +8,14 @@ from typing import Any
 import sublime
 from LSP.plugin import AbstractPlugin, DottedDict
 
-from .constants import (
-    DOWNLOAD_TARBALL_BIN_PATH,
-    PACKAGE_NAME,
-    SERVER_DOWNLOAD_HASH_URL,
-    SERVER_DOWNLOAD_URL,
-    SERVER_VERSION,
-)
+from .constants import PACKAGE_NAME
 from .log import log_warning
 from .template import load_string_template
 from .utils import decompress_buffer, rmtree_ex, sha256sum, simple_urlopen
+from .version_manager import version_manager
 
 
 class LspRuffPlugin(AbstractPlugin):
-    server_version = SERVER_VERSION
-
     @classmethod
     def name(cls) -> str:
         return PACKAGE_NAME.partition("LSP-")[2]
@@ -33,11 +26,11 @@ class LspRuffPlugin(AbstractPlugin):
 
     @classmethod
     def versioned_server_dir(cls) -> Path:
-        return cls.base_dir() / f"v{cls.server_version}"
+        return cls.base_dir() / f"v{version_manager.server_version}"
 
     @classmethod
     def server_path(cls) -> Path:
-        return cls.versioned_server_dir() / DOWNLOAD_TARBALL_BIN_PATH
+        return cls.versioned_server_dir() / version_manager.DOWNLOAD_TARBALL_BIN_PATH
 
     @classmethod
     def additional_variables(cls) -> dict[str, str] | None:
@@ -53,16 +46,16 @@ class LspRuffPlugin(AbstractPlugin):
     def install_or_update(cls) -> None:
         rmtree_ex(cls.base_dir(), ignore_errors=True)
 
-        data = simple_urlopen(SERVER_DOWNLOAD_URL)
+        data = simple_urlopen(version_manager.server_download_url)
 
         hash_actual = sha256sum(data)
-        hash_golden = simple_urlopen(SERVER_DOWNLOAD_HASH_URL).decode().partition(" ")[0]
+        hash_golden = simple_urlopen(version_manager.server_download_hash_url).decode().partition(" ")[0]
         if hash_actual != hash_golden:
             raise ValueError(f"Mismatched downloaded file hash: {hash_actual} != {hash_golden}")
 
         decompress_buffer(
             io.BytesIO(data),
-            filename=SERVER_DOWNLOAD_URL.rpartition("/")[2],
+            filename=version_manager.server_download_url.rpartition("/")[2],
             dst_dir=cls.versioned_server_dir(),
         )
 
@@ -93,7 +86,7 @@ class LspRuffPlugin(AbstractPlugin):
             return
 
         variables: dict[str, Any] = {
-            "server_version": self.server_version,
+            "server_version": version_manager.server_version,
         }
 
         if extra_variables:
