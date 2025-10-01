@@ -9,7 +9,7 @@ import sublime
 from LSP.plugin import AbstractPlugin, DottedDict
 
 from .constants import PACKAGE_NAME
-from .log import log_warning
+from .log import log_info, log_warning
 from .template import load_string_template
 from .utils import decompress_buffer, rmtree_ex, sha256sum, simple_urlopen
 from .version_manager import version_manager
@@ -30,7 +30,7 @@ class LspRuffPlugin(AbstractPlugin):
 
     @classmethod
     def server_path(cls) -> Path:
-        return cls.versioned_server_dir() / version_manager.DOWNLOAD_TARBALL_BIN_PATH
+        return cls.versioned_server_dir() / version_manager.THIS_TARBALL_BIN_PATH
 
     @classmethod
     def additional_variables(cls) -> dict[str, str] | None:
@@ -46,6 +46,7 @@ class LspRuffPlugin(AbstractPlugin):
     def install_or_update(cls) -> None:
         rmtree_ex(cls.base_dir(), ignore_errors=True)
 
+        log_info(f"Downloading server tarball: {version_manager.server_download_url}")
         data = simple_urlopen(version_manager.server_download_url)
 
         hash_actual = sha256sum(data)
@@ -55,7 +56,7 @@ class LspRuffPlugin(AbstractPlugin):
 
         decompress_buffer(
             io.BytesIO(data),
-            filename=version_manager.server_download_url.rpartition("/")[2],
+            filename=version_manager.THIS_TARBALL_BIN_PATH,
             dst_dir=cls.versioned_server_dir(),
         )
 

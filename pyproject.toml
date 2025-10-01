@@ -69,3 +69,7 @@ ignore = ["E203"]
 
 [tool.ruff.lint.per-file-ignores]
 "boot.py" = ["E402"]
+
+[tool.ty.environment]
+extra-paths = ["./typings"]
+python-version = "3.8"
