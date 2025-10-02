@@ -62,7 +62,7 @@ class LspRuffPlugin(AbstractPlugin):
 
         decompress_buffer(
             io.BytesIO(data),
-            filename=version_manager.THIS_TARBALL_BIN_PATH,
+            filename=version_manager.THIS_TARBALL_NAME,
             dst_dir=cls.versioned_server_dir(),
         )
 
