@@ -38,7 +38,7 @@ class LspRuffPlugin(AbstractPlugin):
 
     @classmethod
     def install_or_update(cls) -> None:
-        rmtree_ex(cls.base_dir(), ignore_errors=True)
+        rmtree_ex(cls.plugin_storage_dir(), ignore_errors=True)
 
         log_info(f"Downloading server tarball: {version_manager.server_download_url}")
         data = simple_urlopen(version_manager.server_download_url)
@@ -77,15 +77,18 @@ class LspRuffPlugin(AbstractPlugin):
     # -------------- #
 
     @classmethod
-    def base_dir(cls) -> Path:
+    def plugin_storage_dir(cls) -> Path:
+        """The storage directory for this plugin."""
         return Path(cls.storage_path()) / PACKAGE_NAME
 
     @classmethod
     def versioned_server_dir(cls) -> Path:
-        return cls.base_dir() / f"v{version_manager.server_version}"
+        """The directory specific to the current server version."""
+        return cls.plugin_storage_dir() / f"v{version_manager.server_version}"
 
     @classmethod
     def server_path(cls) -> Path:
+        """The path of the language server binary."""
         return cls.versioned_server_dir() / version_manager.THIS_TARBALL_BIN_PATH
 
     def update_status_bar_text(self, extra_variables: dict[str, Any] | None = None) -> None:

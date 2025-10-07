@@ -22,6 +22,7 @@ class VersionManager:
     }
     """`platform_arch`-specific tarball names for the server."""
     THIS_TARBALL_NAME = TARBALL_NAMES[PLATFORM_ARCH]
+    """The tarball name for the current platform architecture."""
 
     TARBALL_BIN_PATHS = {
         "linux_arm64": "ruff-aarch64-unknown-linux-gnu/ruff",
@@ -33,6 +34,7 @@ class VersionManager:
     }
     """`platform_arch`-specific relative path of the server executable in the tarball."""
     THIS_TARBALL_BIN_PATH = TARBALL_BIN_PATHS[PLATFORM_ARCH]
+    """The relative path of the server executable in the tarball for the current platform architecture."""
 
     @cached_property
     def server_version(self) -> str:
@@ -47,10 +49,12 @@ class VersionManager:
 
     @cached_property
     def server_download_url(self) -> str:
+        """The URL for downloading the server tarball."""
         return self.DOWNLOAD_URL_TEMPLATE.format(version=self.server_version, tarball_name=self.THIS_TARBALL_NAME)
 
     @cached_property
     def server_download_hash_url(self) -> str:
+        """The URL for downloading the SHA256 hash of the server tarball."""
         return f"{self.server_download_url}.sha256"
 
 
