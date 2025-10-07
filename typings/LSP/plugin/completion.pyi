@@ -13,25 +13,35 @@ from _typeshed import Incomplete
 from typing import Any, Callable, Generator
 from typing_extensions import TypeAlias, TypeGuard
 
-SessionName: TypeAlias
-CompletionResponse: TypeAlias
+SessionName: TypeAlias = str
+CompletionResponse: TypeAlias = list[CompletionItem] | CompletionList | None
 ResolvedCompletions: TypeAlias
-CompletionsStore: TypeAlias
+CompletionsStore: TypeAlias = tuple[list[CompletionItem], CompletionItemDefaults]
 
 def format_details(detail: str, cutoff_length: int = 80) -> str: ...
 def format_completion(item: CompletionItem, index: int, can_resolve_completion_items: bool, session_name: str, item_defaults: CompletionItemDefaults, view_id: int) -> sublime.CompletionItem: ...
 def get_text_edit_range(text_edit: TextEdit | InsertReplaceEdit) -> Range: ...
 def is_range(val: Any) -> TypeGuard[Range]: ...
 def is_edit_range(val: Any) -> TypeGuard[EditRangeWithInsertReplace]: ...
-def completion_with_defaults(item: CompletionItem, item_defaults: CompletionItemDefaults) -> CompletionItem: ...
+def completion_with_defaults(item: CompletionItem, item_defaults: CompletionItemDefaults) -> CompletionItem:
+    ''' Currently supports defaults for: ["editRange", "insertTextFormat", "data"] '''
 
 class QueryCompletionsTask:
+    '''
+    Represents pending completion requests.
+
+    Can be canceled while in progress in which case the "on_done_async" callback will get immediately called with empty
+    list and the pending response from the server(s) will be canceled and results ignored.
+
+    All public methods must only be called on the async thread and the "on_done_async" callback will also be called
+    on the async thread.
+    '''
     _view: Incomplete
     _location: Incomplete
     _triggered_manually: Incomplete
     _on_done_async: Incomplete
     _resolved: bool
-    _pending_completion_requests: Incomplete
+    _pending_completion_requests: dict[int, weakref.ref[Session]]
     def __init__(self, view: sublime.View, location: int, triggered_manually: bool, on_done_async: Callable[[list[sublime.CompletionItem], sublime.AutoCompleteFlags], None]) -> None: ...
     def query_completions_async(self, sessions: list[Session]) -> None: ...
     def _create_completion_request_async(self, session: Session) -> Promise[ResolvedCompletions]: ...

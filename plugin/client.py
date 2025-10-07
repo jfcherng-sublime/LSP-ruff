@@ -27,18 +27,6 @@ class LspRuffPlugin(AbstractPlugin):
         return sublime.load_settings(basename), filepath
 
     @classmethod
-    def base_dir(cls) -> Path:
-        return Path(cls.storage_path()) / PACKAGE_NAME
-
-    @classmethod
-    def versioned_server_dir(cls) -> Path:
-        return cls.base_dir() / f"v{version_manager.server_version}"
-
-    @classmethod
-    def server_path(cls) -> Path:
-        return cls.versioned_server_dir() / version_manager.THIS_TARBALL_BIN_PATH
-
-    @classmethod
     def additional_variables(cls) -> dict[str, str] | None:
         return {
             "server_path": str(cls.server_path()),
@@ -87,6 +75,18 @@ class LspRuffPlugin(AbstractPlugin):
     # -------------- #
     # custom methods #
     # -------------- #
+
+    @classmethod
+    def base_dir(cls) -> Path:
+        return Path(cls.storage_path()) / PACKAGE_NAME
+
+    @classmethod
+    def versioned_server_dir(cls) -> Path:
+        return cls.base_dir() / f"v{version_manager.server_version}"
+
+    @classmethod
+    def server_path(cls) -> Path:
+        return cls.versioned_server_dir() / version_manager.THIS_TARBALL_BIN_PATH
 
     def update_status_bar_text(self, extra_variables: dict[str, Any] | None = None) -> None:
         if not (session := self.weaksession()):

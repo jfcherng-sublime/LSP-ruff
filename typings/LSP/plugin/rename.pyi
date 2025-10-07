@@ -15,7 +15,8 @@ DISCARD_COMMAND_URL: Incomplete
 PREPARE_RENAME_CAPABILITY: str
 
 def is_range_response(result: PrepareRenameResult) -> TypeGuard[Range]: ...
-def utf16_to_code_points(s: str, col: int) -> int: ...
+def utf16_to_code_points(s: str, col: int) -> int:
+    """Convert a position from UTF-16 code units to Unicode code points, usable for string slicing."""
 
 class LspSymbolRenameCommand(LspTextCommand):
     capability: str

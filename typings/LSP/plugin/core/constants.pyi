@@ -11,6 +11,7 @@ ST_VERSION: Incomplete
 ST_STORAGE_PATH: Incomplete
 
 class RegionKey(StrEnum):
+    """ Key names for use with the `View.add_regions` method. """
     CODE_ACTION = 'lsp_code_action'
     DOCUMENT_LINK = 'lsp_document_link'
     HOVER_HIGHLIGHT = 'lsp_hover_highlight'

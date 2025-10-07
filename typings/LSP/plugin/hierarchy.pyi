@@ -39,7 +39,8 @@ def make_header(session_name: str, sheet_name: str, direction: int, root_element
 class LspHierarchyCommand(LspTextCommand, metaclass=ABCMeta):
     @classmethod
     @abstractmethod
-    def request(cls, params: TextDocumentPositionParams, view: sublime.View) -> Request[list[HierarchyItem] | Error | None]: ...
+    def request(cls, params: TextDocumentPositionParams, view: sublime.View) -> Request[list[HierarchyItem] | Error | None]:
+        """ A function that generates the initial request when this command is invoked. """
     def is_visible(self, event: dict | None = None, point: int | None = None) -> bool: ...
     _window: Incomplete
     def run(self, edit: sublime.Edit, event: dict | None = None, point: int | None = None) -> None: ...

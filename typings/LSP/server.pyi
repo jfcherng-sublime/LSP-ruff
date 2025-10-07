@@ -52,8 +52,8 @@ class Request:
 
 class SimpleRequest(Request):
     cv: Incomplete
-    result: Incomplete
-    error: Incomplete
+    result: PayloadLike
+    error: Error | None
     def __init__(self) -> None: ...
     async def on_result(self, params: PayloadLike) -> None: ...
     async def on_error(self, err: Error) -> None: ...
@@ -61,12 +61,12 @@ class SimpleRequest(Request):
 class Session:
     _reader: Incomplete
     _writer: Incomplete
-    _response_handlers: Incomplete
-    _request_handlers: Incomplete
-    _notification_handlers: Incomplete
+    _response_handlers: dict[Any, Request]
+    _request_handlers: dict[str, Callable[[PayloadLike], Awaitable[PayloadLike]]]
+    _notification_handlers: dict[str, Callable[[PayloadLike], Awaitable[None]]]
     _received_shutdown: bool
-    _responses: Incomplete
-    _received: Incomplete
+    _responses: list[tuple[str, PayloadLike]]
+    _received: dict[str, PayloadLike]
     _received_cv: Incomplete
     def __init__(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None: ...
     def _log(self, message: str) -> None: ...

@@ -30,6 +30,12 @@ def is_document_symbol_value(val: Any) -> TypeGuard[DocumentSymbolValue]: ...
 def symbol_to_list_input_item(item: DocumentSymbol | WorkspaceSymbol | SymbolInformation, hierarchy: str = '', session_name: str | None = None) -> sublime.ListInputItem: ...
 
 class LspSelectionClearCommand(sublime_plugin.TextCommand):
+    """
+    Selections may not be modified outside the run method of a text command. Thus, to allow modification in an async
+    context we need to have dedicated commands for this.
+
+    https://github.com/sublimehq/sublime_text/issues/485#issuecomment-337480388
+    """
     def run(self, _: sublime.Edit) -> None: ...
 
 class LspSelectionAddCommand(sublime_plugin.TextCommand):
@@ -40,7 +46,7 @@ class LspSelectionSetCommand(sublime_plugin.TextCommand):
 
 class LspDocumentSymbolsCommand(LspTextCommand):
     capability: str
-    items: Incomplete
+    items: list[sublime.ListInputItem]
     kind: int
     cached: bool
     has_matching_symbols: bool

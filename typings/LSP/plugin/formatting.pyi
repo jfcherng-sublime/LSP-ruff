@@ -8,8 +8,7 @@ from .core.sessions import Session as Session
 from .core.settings import userprefs as userprefs
 from .core.views import entire_content_region as entire_content_region, first_selection_region as first_selection_region, has_single_nonempty_selection as has_single_nonempty_selection, text_document_formatting as text_document_formatting, text_document_range_formatting as text_document_range_formatting, text_document_ranges_formatting as text_document_ranges_formatting, will_save_wait_until as will_save_wait_until
 from .save_command import LspSaveCommand as LspSaveCommand, SaveTask as SaveTask
-from _typeshed import Incomplete
-from typing import Callable
+from typing import Callable, Iterator
 
 FormatResponse = list[TextEdit] | None | Error
 
@@ -19,7 +18,7 @@ def format_document(text_command: LspTextCommand, formatter: str | None = None) 
 class WillSaveWaitTask(SaveTask):
     @classmethod
     def is_applicable(cls, view: sublime.View) -> bool: ...
-    _session_iterator: Incomplete
+    _session_iterator: Iterator[Session] | None
     def __init__(self, task_runner: LspTextCommand, on_complete: Callable[[], None]) -> None: ...
     def run_async(self) -> None: ...
     def _handle_next_session_async(self) -> None: ...

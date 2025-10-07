@@ -13,6 +13,10 @@ class SemanticToken:
 def copy(view: sublime.View, text: str) -> None: ...
 
 class LspShowScopeNameCommand(LspTextCommand):
+    """
+    Like the builtin show_scope_name command from Default/show_scope_name.py,
+    but will also show semantic tokens if applicable.
+    """
     capability: str
     def want_event(self) -> bool: ...
     def run(self, _: sublime.Edit) -> None: ...

@@ -11,6 +11,7 @@ from .core.settings import userprefs as userprefs
 from .core.url import parse_uri as parse_uri
 from .core.views import FORMAT_MARKED_STRING as FORMAT_MARKED_STRING, FORMAT_MARKUP_CONTENT as FORMAT_MARKUP_CONTENT, MarkdownLangMap as MarkdownLangMap, diagnostic_severity as diagnostic_severity, format_code_actions_for_quick_panel as format_code_actions_for_quick_panel, format_diagnostic_for_html as format_diagnostic_for_html, is_location_href as is_location_href, make_command_link as make_command_link, make_link as make_link, minihtml as minihtml, range_to_region as range_to_region, show_lsp_popup as show_lsp_popup, text_document_position_params as text_document_position_params, unpack_href_location as unpack_href_location, update_lsp_popup as update_lsp_popup
 from _typeshed import Incomplete
+from typing import Sequence
 
 SessionName = str
 ResolvedHover = Hover | Error
@@ -30,13 +31,13 @@ link_kinds: Incomplete
 def code_actions_content(actions_by_config: list[CodeActionsByConfigName], lightbulb: bool = True) -> str: ...
 
 class LspHoverCommand(LspTextCommand):
-    _base_dir: Incomplete
+    _base_dir: str | None
     _image_resolver: Incomplete
     def __init__(self, view: sublime.View) -> None: ...
-    _hover_responses: Incomplete
-    _document_links: Incomplete
-    _actions_by_config: Incomplete
-    _diagnostics_by_config: Incomplete
+    _hover_responses: list[tuple[Hover, MarkdownLangMap | None]]
+    _document_links: list[DocumentLink]
+    _actions_by_config: list[CodeActionsByConfigName]
+    _diagnostics_by_config: Sequence[tuple[SessionBufferProtocol, Sequence[Diagnostic]]]
     def run(self, edit: sublime.Edit, only_diagnostics: bool = False, point: int | None = None, event: dict | None = None) -> None: ...
     def request_symbol_hover_async(self, listener: AbstractViewListener, point: int) -> None: ...
     def _on_all_settled(self, listener: AbstractViewListener, point: int, language_maps: list[MarkdownLangMap | None], responses: list[ResolvedHover]) -> None: ...

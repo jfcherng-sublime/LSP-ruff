@@ -23,6 +23,9 @@ class TagData:
     def __init__(self, key: str, regions: list[sublime.Region] = [], scope: str = '') -> None: ...
 
 class SessionView:
+    """
+    Holds state per session per view.
+    """
     HOVER_PROVIDER_KEY: str
     AC_TRIGGERS_KEY: str
     COMPLETION_PROVIDER_KEY: str
@@ -31,7 +34,7 @@ class SessionView:
     _view: Incomplete
     _session: Incomplete
     _diagnostic_annotations: Incomplete
-    _active_requests: Incomplete
+    _active_requests: dict[int, ActiveRequest]
     _listener: Incomplete
     _code_lenses: Incomplete
     code_lenses_needs_refresh: bool
@@ -47,12 +50,25 @@ class SessionView:
     @property
     def session_buffer(self) -> SessionBuffer: ...
     def _is_listener_alive(self) -> bool: ...
-    def _initialize_region_keys(self) -> None: ...
-    def _clear_auto_complete_triggers(self, settings: sublime.Settings) -> None: ...
-    def _setup_auto_complete_triggers(self, settings: sublime.Settings) -> None: ...
-    def _register_auto_complete_triggers(self, registration_id: str, trigger_chars: list[str]) -> None: ...
-    def _unregister_auto_complete_triggers(self, registration_id: str) -> None: ...
-    def _apply_auto_complete_triggers(self, settings: sublime.Settings, trigger_chars: list[str], registration_id: str | None = None) -> None: ...
+    def _initialize_region_keys(self) -> None:
+        """
+        Initialize all region keys for the View.add_regions method to enforce a certain draw order for overlapping
+        diagnostics, semantic tokens, document highlights, and gutter icons. The draw order seems to follow the
+        following rules:
+          - inline decorations (underline & background) from region keys which were initialized _last_ are drawn on top
+          - gutter icons from region keys which were initialized _first_ are drawn
+        For more context, see https://github.com/sublimelsp/LSP/issues/1593.
+        """
+    def _clear_auto_complete_triggers(self, settings: sublime.Settings) -> None:
+        '''Remove all of our modifications to the view\'s "auto_complete_triggers"'''
+    def _setup_auto_complete_triggers(self, settings: sublime.Settings) -> None:
+        """Register trigger characters from static capabilities of the server."""
+    def _register_auto_complete_triggers(self, registration_id: str, trigger_chars: list[str]) -> None:
+        """Register trigger characters from a dynamic server registration."""
+    def _unregister_auto_complete_triggers(self, registration_id: str) -> None:
+        """Remove trigger characters that were previously dynamically registered."""
+    def _apply_auto_complete_triggers(self, settings: sublime.Settings, trigger_chars: list[str], registration_id: str | None = None) -> None:
+        """This method actually modifies the auto_complete_triggers entries for the view."""
     def _increment_hover_count(self) -> None: ...
     def _decrement_hover_count(self) -> None: ...
     def reset_show_definitions(self) -> None: ...

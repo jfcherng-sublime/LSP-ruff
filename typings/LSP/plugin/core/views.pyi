@@ -16,9 +16,9 @@ DIAGNOSTIC_SEVERITY: list[tuple[str, str, str, str, sublime.RegionFlags, sublime
 
 class DiagnosticSeverityData:
     __slots__: Incomplete
-    regions: Incomplete
-    regions_with_tag: Incomplete
-    annotations: Incomplete
+    regions: list[sublime.Region]
+    regions_with_tag: dict[int, list[sublime.Region]]
+    annotations: list[str]
     icon: Incomplete
     def __init__(self, severity: int) -> None: ...
 
@@ -27,7 +27,11 @@ class InvalidUriSchemeException(Exception):
     def __init__(self, uri: str) -> None: ...
     def __str__(self) -> str: ...
 
-def get_line(window: sublime.Window, file_name: str, row: int, strip: bool = True) -> str: ...
+def get_line(window: sublime.Window, file_name: str, row: int, strip: bool = True) -> str:
+    """
+    Get the line from the buffer if the view is open, else get line from linecache.
+    row - is 0 based. If you want to get the first line, you should pass 0.
+    """
 def extract_variables(window: sublime.Window) -> dict[str, str]: ...
 def point_to_offset(point: Point, view: sublime.View) -> int: ...
 def offset_to_point(view: sublime.View, offset: int) -> Point: ...
@@ -39,7 +43,10 @@ def region_to_range(view: sublime.View, region: sublime.Region) -> Range: ...
 def to_encoded_filename(path: str, position: Position) -> str: ...
 def get_uri_and_range_from_location(location: Location | LocationLink) -> tuple[DocumentUri, Range]: ...
 def get_uri_and_position_from_location(location: Location | LocationLink) -> tuple[DocumentUri, Position]: ...
-def location_to_encoded_filename(location: Location | LocationLink) -> str: ...
+def location_to_encoded_filename(location: Location | LocationLink) -> str:
+    """
+    DEPRECATED
+    """
 
 class MissingUriError(Exception):
     view_id: Incomplete
@@ -83,7 +90,26 @@ FORMAT_STRING: int
 FORMAT_MARKED_STRING: int
 FORMAT_MARKUP_CONTENT: int
 
-def minihtml(view: sublime.View, content: MarkedString | MarkupContent | list[MarkedString], allowed_formats: int, language_id_map: MarkdownLangMap | None = None) -> str: ...
+def minihtml(view: sublime.View, content: MarkedString | MarkupContent | list[MarkedString], allowed_formats: int, language_id_map: MarkdownLangMap | None = None) -> str:
+    """
+    Formats provided input content into markup accepted by minihtml.
+
+    Content can be in one of those formats:
+
+     - string: treated as plain text
+     - MarkedString: string or { language: string; value: string }
+     - MarkedString[]
+     - MarkupContent: { kind: MarkupKind, value: string }
+
+    We can't distinguish between plain text string and a MarkedString in a string form so
+    FORMAT_STRING and FORMAT_MARKED_STRING can't both be specified at the same time.
+
+    :param view
+    :param content
+    :param allowed_formats: Bitwise flag specifying which formats to parse.
+
+    :returns: Formatted string
+    """
 
 REPLACEMENT_MAP: Incomplete
 PATTERNS: Incomplete
@@ -106,15 +132,42 @@ def document_color_params(view: sublime.View) -> DocumentColorParams: ...
 def format_severity(severity: int) -> str: ...
 def diagnostic_severity(diagnostic: Diagnostic) -> DiagnosticSeverity: ...
 def format_diagnostics_for_annotation(diagnostics: list[Diagnostic], severity: DiagnosticSeverity, view: sublime.View) -> tuple[list[str], str]: ...
-def format_diagnostic_for_panel(diagnostic: Diagnostic) -> tuple[str, int | None, str | None, str | None]: ...
+def format_diagnostic_for_panel(diagnostic: Diagnostic) -> tuple[str, int | None, str | None, str | None]:
+    """
+    Turn an LSP diagnostic into a string suitable for an output panel.
+
+    :param      diagnostic:  The diagnostic
+    :returns:   Tuple of (content, optional offset, optional code, optional href)
+                When the last three elements are optional, don't show an inline phantom
+                When the last three elements are not optional, show an inline phantom
+                using the information given.
+    """
 def format_diagnostic_source_and_code(diagnostic: Diagnostic) -> str: ...
 def diagnostic_source_and_code(diagnostic: Diagnostic) -> tuple[str, str | None, str | None]: ...
-def location_to_human_readable(config: ClientConfig, base_dir: str | None, location: Location | LocationLink) -> str: ...
-def location_to_href(config: ClientConfig, location: Location | LocationLink) -> str: ...
-def unpack_href_location(href: str) -> tuple[str, str, int, int]: ...
-def is_location_href(href: str) -> bool: ...
+def location_to_human_readable(config: ClientConfig, base_dir: str | None, location: Location | LocationLink) -> str:
+    """
+    Format an LSP Location (or LocationLink) into a string suitable for a human to read
+    """
+def location_to_href(config: ClientConfig, location: Location | LocationLink) -> str:
+    """
+    Encode an LSP Location (or LocationLink) into a string suitable as a hyperlink in minihtml
+    """
+def unpack_href_location(href: str) -> tuple[str, str, int, int]:
+    """
+    Return the session name, URI, row, and col_utf16 from an encoded href.
+    """
+def is_location_href(href: str) -> bool:
+    """
+    Check whether this href is an encoded location.
+    """
 def _format_diagnostic_related_info(config: ClientConfig, info: DiagnosticRelatedInformation, base_dir: str | None = None) -> str: ...
 def _html_element(name: str, text: str, class_name: str | None = None, escape: bool = True) -> str: ...
 def format_diagnostic_for_html(config: ClientConfig, diagnostic: Diagnostic, base_dir: str | None = None) -> str: ...
 def format_code_actions_for_quick_panel(session_actions: Iterable[tuple[str, CodeAction | Command]]) -> tuple[list[sublime.QuickPanelItem], int]: ...
-def kind_contains_other_kind(kind: str, other_kind: str) -> bool: ...
+def kind_contains_other_kind(kind: str, other_kind: str) -> bool:
+    '''
+    Check if `other_kind` is a sub-kind of `kind`.
+
+    The kind `"refactor.extract"` for example contains `"refactor.extract"` and ``"refactor.extract.function"`,
+    but not `"unicorn.refactor.extract"`, or `"refactor.extractAll"` or `refactor`.
+    '''

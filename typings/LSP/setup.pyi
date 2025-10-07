@@ -40,7 +40,19 @@ class TextDocumentTestCase(DeferrableTestCase):
     @classmethod
     def ensure_document_listener_created(cls) -> bool: ...
     @classmethod
-    def await_message(cls, method: str, promise: YieldPromise | None = None) -> Generator: ...
+    def await_message(cls, method: str, promise: YieldPromise | None = None) -> Generator:
+        """
+        Awaits until server receives a request with a specified method.
+
+        If the server has already received a request with a specified method before, it will
+        immediately return the response for that previous request. If it hasn't received such
+        request yet, it will wait for it and then respond.
+
+        :param      method: The method type that we are awaiting response for.
+        :param      promise: The optional promise to fullfill on response.
+
+        :returns:   A generator with resolved value.
+        """
     def make_server_do_fake_request(self, method: str, params: Any) -> YieldPromise: ...
     @classmethod
     def await_promise(cls, promise: YieldPromise | Promise) -> Generator: ...

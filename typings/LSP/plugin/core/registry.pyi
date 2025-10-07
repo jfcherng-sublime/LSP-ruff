@@ -13,6 +13,10 @@ def best_session(view: sublime.View, sessions: Iterable[Session], point: int | N
 def get_position(view: sublime.View, event: dict | None = None, point: int | None = None) -> int | None: ...
 
 class LspWindowCommand(sublime_plugin.WindowCommand):
+    """
+    Inherit from this class to define requests which are not bound to a particular view. This allows to run requests
+    for example from links in HtmlSheets or when an unrelated file has focus.
+    """
     capability: str
     session_name: str
     def is_enabled(self) -> bool: ...
@@ -21,6 +25,10 @@ class LspWindowCommand(sublime_plugin.WindowCommand):
     def session_by_name(self, session_name: str) -> Session | None: ...
 
 class LspTextCommand(sublime_plugin.TextCommand):
+    """
+    Inherit from this class to define your requests that should be triggered via the command palette and/or a
+    keybinding.
+    """
     capability: str
     session_name: str
     def is_enabled(self, event: dict | None = None, point: int | None = None) -> bool: ...
@@ -33,6 +41,9 @@ class LspTextCommand(sublime_plugin.TextCommand):
     def sessions(self, capability_path: str | None = None) -> Generator[Session, None, None]: ...
 
 class LspOpenLocationCommand(LspWindowCommand):
+    """
+    A command to be used by third-party ST packages that need to open an URI with some abstract scheme.
+    """
     def run(self, location: Location | LocationLink, session_name: str | None = None, flags: sublime.NewFileFlags = ..., group: int = -1, event: dict | None = None) -> None: ...
     def want_event(self) -> bool: ...
     def _run_async(self, location: Location | LocationLink, session_name: str | None, flags: sublime.NewFileFlags, group: int) -> None: ...

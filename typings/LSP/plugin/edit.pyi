@@ -5,10 +5,12 @@ from .core.logging import debug as debug
 from .core.protocol import TextEdit as TextEdit, WorkspaceEdit as WorkspaceEdit
 from .core.registry import LspWindowCommand as LspWindowCommand
 from _typeshed import Incomplete
+from contextlib import contextmanager
 from typing import Any, Generator, Iterable
 
 TextEditTuple = tuple[tuple[int, int], tuple[int, int], str]
 
+@contextmanager
 def temporary_setting(settings: sublime.Settings, key: str, val: Any) -> Generator[None, None, None]: ...
 
 class LspApplyWorkspaceEditCommand(LspWindowCommand):
