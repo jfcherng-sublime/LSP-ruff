@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import io
-import os
 from pathlib import Path
 
 from LSP.plugin import AbstractPlugin
@@ -85,7 +84,7 @@ class VersionManager:
             dst_dir=self.versioned_server_dir,
         )
         # make the server binary executable (required on Mac/Linux)
-        os.chmod(self.server_path, 0o755)
+        self.server_path.chmod(0o755)
 
 
 version_manager = VersionManager()
