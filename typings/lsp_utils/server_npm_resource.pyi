@@ -1,9 +1,21 @@
+from .helpers import SemanticVersion
 from .node_runtime import NodeRuntime
 from .server_resource_interface import ServerResourceInterface
-from LSP.plugin.core.typing import Dict, Optional
 from _typeshed import Incomplete
+from typing import TypedDict
+from typing_extensions import override
 
 __all__ = ['ServerNpmResource']
+
+class ServerNpmResourceCreateOptions(TypedDict):
+    package_name: str
+    server_directory: str
+    server_binary_path: str
+    package_storage: str
+    storage_path: str
+    minimum_node_version: SemanticVersion
+    required_node_version: str
+    skip_npm_install: bool
 
 class ServerNpmResource(ServerResourceInterface):
     @classmethod
@@ -18,15 +30,19 @@ class ServerNpmResource(ServerResourceInterface):
     _node_version_marker_file: Incomplete
     _node_runtime: Incomplete
     _skip_npm_install: Incomplete
-    def __init__(self, package_name: str, server_directory: str, server_binary_path: str, package_storage: str, node_runtime: NodeRuntime, skip_npm_install: bool) -> None: ...
+    def __init__(self, package_name: str, server_directory: str, server_binary_path: str, package_storage: str, node_runtime: NodeRuntime, *, skip_npm_install: bool) -> None: ...
     @property
     def server_directory_path(self) -> str: ...
     @property
     def node_bin(self) -> str: ...
     @property
-    def node_env(self) -> Optional[Dict[str, str]]: ...
+    def node_env(self) -> dict[str, str] | None: ...
     @property
+    @override
     def binary_path(self) -> str: ...
+    @override
     def get_status(self) -> int: ...
+    @override
     def needs_installation(self) -> bool: ...
+    @override
     def install_or_update(self) -> None: ...

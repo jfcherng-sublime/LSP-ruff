@@ -9,10 +9,9 @@ class CSS:
     sheets_classname: str
     inlay_hints: Incomplete
     annotations: Incomplete
-    annotations_classname: str
     def __init__(self) -> None: ...
 
-_css: CSS | None
+g_css: CSS | None
 
 def load() -> None: ...
 def css() -> CSS: ...

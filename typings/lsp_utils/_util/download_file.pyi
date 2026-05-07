@@ -1,0 +1,6 @@
+from pathlib import Path
+
+__all__ = ['download_file', 'extract_archive']
+
+def download_file(url: str, target_path: Path) -> None: ...
+def extract_archive(archive_file: Path, target_directory: Path) -> Path | None: ...

@@ -1,5 +1,5 @@
 import abc
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 __all__ = ['ServerStatus', 'ServerResourceInterface']
 
@@ -8,7 +8,7 @@ class ServerStatus:
     ERROR: int
     READY: int
 
-class ServerResourceInterface(metaclass=ABCMeta):
+class ServerResourceInterface(ABC, metaclass=abc.ABCMeta):
     @abstractmethod
     def needs_installation(self) -> bool: ...
     @abstractmethod
@@ -16,5 +16,5 @@ class ServerResourceInterface(metaclass=ABCMeta):
     @abstractmethod
     def get_status(self) -> int: ...
     @property
-    @abc.abstractmethod
+    @abstractmethod
     def binary_path(self) -> str: ...

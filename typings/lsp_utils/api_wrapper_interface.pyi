@@ -1,16 +1,17 @@
-from LSP.plugin.core.typing import Any, Callable
-from abc import ABCMeta, abstractmethod
+import abc
+from abc import ABC, abstractmethod
+from typing import Any, Callable
 
-__all__ = ['ApiWrapperInterface']
+__all__ = ['ApiNotificationHandler', 'ApiRequestHandler', 'ApiWrapperInterface']
 
-NotificationHandler = Callable[[Any], None]
-RequestHandler = Callable[[Any, Callable[[Any], None]], None]
+ApiNotificationHandler = Callable[[Any], None]
+ApiRequestHandler = Callable[[Any, Callable[[Any], None]], None]
 
-class ApiWrapperInterface(metaclass=ABCMeta):
+class ApiWrapperInterface(ABC, metaclass=abc.ABCMeta):
     @abstractmethod
-    def on_notification(self, method: str, handler: NotificationHandler) -> None: ...
+    def on_notification(self, method: str, handler: ApiNotificationHandler) -> None: ...
     @abstractmethod
-    def on_request(self, method: str, handler: RequestHandler) -> None: ...
+    def on_request(self, method: str, handler: ApiRequestHandler) -> None: ...
     @abstractmethod
     def send_notification(self, method: str, params: Any) -> None: ...
     @abstractmethod

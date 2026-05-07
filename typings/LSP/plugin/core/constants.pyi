@@ -1,7 +1,9 @@
-from .protocol import CodeActionKind as CodeActionKind, CompletionItemKind as CompletionItemKind, DiagnosticSeverity as DiagnosticSeverity, DocumentHighlightKind as DocumentHighlightKind, SymbolKind as SymbolKind
+from ...protocol import CodeActionKind, CompletionItemKind, DiagnosticSeverity, DiagnosticTag, DocumentHighlightKind, MessageType, SymbolKind
 from .typing import StrEnum as StrEnum
 from _typeshed import Incomplete
+from enum import IntEnum, IntFlag
 
+MarkdownLangMap = dict[str, tuple[tuple[str, ...], tuple[str, ...]]]
 SublimeKind = tuple[int, str, str]
 ST_CACHE_PATH: Incomplete
 ST_INSTALLED_PACKAGES_PATH: Incomplete
@@ -9,17 +11,37 @@ ST_PACKAGES_PATH: Incomplete
 ST_PLATFORM: Incomplete
 ST_VERSION: Incomplete
 ST_STORAGE_PATH: Incomplete
+MARKO_MD_PARSER_VERSION: str | None
+AUTO_CLOSE_BRACKETS: Incomplete
+
+class RequestFlags(IntFlag):
+    NONE = 0
+    DOCUMENT_COLOR = 1
+    INLAY_HINT = 2
+    SEMANTIC_TOKENS = 4
+    ON_TYPE_FORMATTING = 8
+    CODE_LENS = 16
+    DIAGNOSTIC = 32
 
 class RegionKey(StrEnum):
-    """ Key names for use with the `View.add_regions` method. """
     CODE_ACTION = 'lsp_code_action'
     DOCUMENT_LINK = 'lsp_document_link'
     HOVER_HIGHLIGHT = 'lsp_hover_highlight'
     REFERENCE_HIGHLIGHT = 'lsp_reference_highlight'
 
+class ChangeEventAction(IntEnum):
+    CUT = ...
+    INSERT_NEWLINE = ...
+    OTHER = ...
+    PASTE = ...
+    REDO = ...
+    TYPE = ...
+    UNDO = ...
+
 CODE_LENS_ENABLED_KEY: str
 HOVER_ENABLED_KEY: str
 SHOW_DEFINITIONS_KEY: str
+DIAGNOSTIC_ICON_FLAGS: Incomplete
 DOCUMENT_LINK_FLAGS: Incomplete
 REGIONS_INITIALIZE_FLAGS: Incomplete
 SEMANTIC_TOKEN_FLAGS: Incomplete
@@ -68,8 +90,18 @@ COMPLETION_KINDS: dict[CompletionItemKind, SublimeKind]
 SYMBOL_KINDS: dict[SymbolKind, SublimeKind]
 DIAGNOSTIC_KINDS: dict[DiagnosticSeverity, SublimeKind]
 CODE_ACTION_KINDS: dict[CodeActionKind, SublimeKind]
-DOCUMENT_HIGHLIGHT_KIND_NAMES: dict[DocumentHighlightKind, str]
+MESSAGE_TYPE_LEVELS: dict[MessageType, str]
 SUBLIME_KIND_SCOPES: dict[SublimeKind, str]
+DIAGNOSTIC_SEVERITY_SCOPES: dict[DiagnosticSeverity, str]
+DIAGNOSTIC_TAG_SCOPES: dict[DiagnosticTag, str]
+SUPPORTED_DIAGNOSTIC_TAGS: Incomplete
 DOCUMENT_HIGHLIGHT_KIND_SCOPES: dict[DocumentHighlightKind, str]
-LANGUAGE_IDENTIFIERS: Incomplete
+CODE_ACTION_ANNOTATION_SCOPE: str
+CODE_LENS_ANNOTATION_SCOPE: str
+SIGNATURE_HELP_FUNCTION_SCOPE: str
+SIGNATURE_HELP_ACTIVE_PARAMETER_SCOPE: str
+SIGNATURE_HELP_INACTIVE_PARAMETER_SCOPE: str
+LIGHTBULB_SCOPE: str
+COMMAND_TO_CHANGE_EVENT_ACTION: dict[str, ChangeEventAction]
+LANGUAGE_IDENTIFIERS: dict[str, str]
 SEMANTIC_TOKENS_MAP: Incomplete
