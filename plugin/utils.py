@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import gzip
 import io
 import os
@@ -10,9 +8,10 @@ import urllib.request
 import zipfile
 from collections.abc import Iterable
 from pathlib import Path
-from typing import IO, Any, Union
+from typing import IO
+from typing import Any
 
-PathLike = Union[Path, str]
+type PathLike = Path | str
 
 
 def decompress_buffer(buffer: IO[bytes], *, filename: str, dst_dir: PathLike) -> bool:

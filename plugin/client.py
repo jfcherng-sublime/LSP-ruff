@@ -1,11 +1,10 @@
-from __future__ import annotations
-
-import os
 from typing import Any
+from typing import override
 
 import sublime
-from LSP.plugin import AbstractPlugin, DottedDict
-from typing_extensions import override
+from LSP.plugin import AbstractPlugin
+from LSP.plugin import ClientConfig
+from LSP.plugin import DottedDict
 
 from .constants import PACKAGE_NAME
 from .log import log_warning
@@ -18,6 +17,15 @@ class LspRuffPlugin(AbstractPlugin):
     @classmethod
     def name(cls) -> str:
         return PACKAGE_NAME
+
+    @override
+    @classmethod
+    def is_applicable(cls, view: sublime.View, config: ClientConfig) -> bool:
+        return bool(
+            super().is_applicable(view, config)
+            # REPL views (https://github.com/sublimelsp/LSP-pyright/issues/343)
+            and not view.settings().get("repl")
+        )
 
     @override
     @classmethod
@@ -42,16 +50,6 @@ class LspRuffPlugin(AbstractPlugin):
     @classmethod
     def install_or_update(cls) -> None:
         version_manager.install_server()
-
-    @override
-    @classmethod
-    def should_ignore(cls, view: sublime.View) -> bool:
-        return bool(
-            # SublimeREPL views
-            view.settings().get("repl")
-            # syntax test files
-            or os.path.basename(view.file_name() or "").startswith("syntax_test")
-        )
 
     # ----- #
     # hooks #
